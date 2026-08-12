@@ -1,0 +1,69 @@
+@page "/"
+@namespace GameEngine.Frontend
+@inject GameClient Client
+@inject VersionInfo Version
+@inject NavigationManager Nav
+
+<section class="panel">
+    <h1>Home</h1>
+    <p class="lead">
+        Multiplayer lobby flows for this FE/BE branch: create a room, join players, play moves,
+        inspect session state, and review engine statistics. Use the top navigation between pages.
+    </p>
+
+    <div class="meta-grid">
+        <div><span class="label">Branch</span><strong>@(liveBranch ?? Version.Branch)</strong></div>
+        <div><span class="label">Frontend .NET</span><strong>@(liveFe ?? Version.FrontendDotnet)</strong></div>
+        <div><span class="label">Backend .NET</span><strong>@(liveBe ?? Version.BackendDotnet)</strong></div>
+        <div><span class="label">Engine health</span><strong class="@(healthy ? "ok" : "bad")">@healthText</strong></div>
+    </div>
+
+    <div class="actions">
+        <button type="button" @onclick="RefreshAsync">Refresh status</button>
+        <button type="button" class="secondary" @onclick='() => Nav.NavigateTo("create")'>Go to Create</button>
+        <button type="button" class="secondary" @onclick='() => Nav.NavigateTo("join")'>Go to Join</button>
+        <button type="button" class="secondary" @onclick='() => Nav.NavigateTo("play")'>Go to Play</button>
+        <button type="button" class="secondary" @onclick='() => Nav.NavigateTo("session")'>Go to Session</button>
+        <button type="button" class="secondary" @onclick='() => Nav.NavigateTo("stats")'>Go to Stats</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <p class="error">@error</p>
+    }
+</section>
+
+@code {
+    private string? liveBranch;
+    private string? liveFe;
+    private string? liveBe;
+    private string healthText = "Checking…";
+    private bool healthy;
+    private string? error;
+
+    protected override async Task OnInitializedAsync() => await RefreshAsync();
+
+    private async Task RefreshAsync()
+    {
+        error = null;
+        try
+        {
+            var health = await Client.HealthAsync();
+            var version = await Client.VersionAsync();
+            healthy = health is not null;
+            healthText = healthy ? "healthy" : "unavailable";
+            if (version is System.Text.Json.JsonElement el)
+            {
+                if (el.TryGetProperty("branch", out var b)) liveBranch = b.GetString();
+                if (el.TryGetProperty("frontend_dotnet", out var fe)) liveFe = fe.GetString();
+                if (el.TryGetProperty("backend_dotnet", out var be)) liveBe = be.GetString();
+            }
+        }
+        catch (Exception ex)
+        {
+            healthy = false;
+            healthText = "unavailable";
+            error = "Game API not reachable at http://localhost:5080. Start the backend, then refresh. " + ex.Message;
+        }
+    }
+}

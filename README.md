@@ -29,9 +29,28 @@ python build.py
 ./build.sh
 ```
 
+## Run the UI (two terminals)
+
+```powershell
+# Terminal 1 — Game API + SignalR
+$env:ASPNETCORE_URLS="http://localhost:5080"
+dotnet run --project backend_csharp/backend_csharp.csproj -c Release
+
+# Terminal 2 — Blazor WebAssembly UI
+dotnet run --project frontend_csharp/frontend_csharp.csproj
+```
+
+Open **http://localhost:5173**
+
+Pages (top navigation): **Home** → **Create** → **Join** → **Play** → **Session** → **Stats**
+
+API: `http://localhost:5080` · Health: `http://localhost:5080/health`
+
+The UI uses built-in Blazor WebAssembly routing, layout, and `HttpClient` only.
+
 ## Layout
 
-- `frontend_csharp/` Blazor game dashboard client
+- `frontend_csharp/` Multi-page Blazor game client
 - `backend_csharp/` Game API + SignalR hub + orchestration
 - `shared/` DTOs / version / config models
 - `engine/` In-memory store (canonical)
