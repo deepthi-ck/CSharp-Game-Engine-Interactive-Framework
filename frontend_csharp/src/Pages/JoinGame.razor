@@ -1,0 +1,44 @@
+@page "/join"
+@namespace GameEngine.Frontend
+@inject GameClient Client
+
+<section class="panel">
+    <h1>Join game</h1>
+    <p class="lead">Join an existing session via <code>POST /game/{id}/join</code>.</p>
+
+    <div class="form-grid">
+        <label>Game id
+            <input @bind="gameId" placeholder="game:1001" autocomplete="off" />
+        </label>
+        <label>Player name
+            <input @bind="player" placeholder="Enter joining player name" autocomplete="off" />
+        </label>
+    </div>
+
+    <div class="actions">
+        <button type="button" @onclick="JoinAsync">Join game</button>
+    </div>
+
+    <p class="status">@status</p>
+    @if (!string.IsNullOrEmpty(Client.LastError)) { <p class="error">@Client.LastError</p> }
+    else if (Client.LastGame is not null) { <p class="ok">Joined session</p> }
+    <pre class="result">@resultJson</pre>
+</section>
+
+@code {
+    private string gameId = string.Empty;
+    private string player = string.Empty;
+    private string status = "Enter a game id and player name, then join.";
+    private string resultJson = "{}";
+
+    protected override void OnInitialized() => Client.StateChanged += () => InvokeAsync(StateHasChanged);
+
+    private async Task JoinAsync()
+    {
+        if (string.IsNullOrWhiteSpace(gameId)) { status = "Game id is required."; return; }
+        if (string.IsNullOrWhiteSpace(player)) { status = "Player name is required."; return; }
+        var result = await Client.JoinAsync(gameId.Trim(), player.Trim());
+        status = result?.Message ?? "Join failed";
+        resultJson = System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+    }
+}
