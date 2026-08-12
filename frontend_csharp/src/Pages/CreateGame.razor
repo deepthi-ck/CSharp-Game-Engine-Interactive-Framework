@@ -1,0 +1,44 @@
+@page "/create"
+@namespace GameEngine.Frontend
+@inject GameClient Client
+
+<section class="panel">
+    <h1>Create game</h1>
+    <p class="lead">Create a new session via <code>POST /game</code>. Fields start empty — enter your own values.</p>
+
+    <div class="form-grid">
+        <label>Game id
+            <input @bind="gameId" placeholder="game:1001" autocomplete="off" />
+        </label>
+        <label>Owner player
+            <input @bind="player" placeholder="Enter owner player name" autocomplete="off" />
+        </label>
+    </div>
+
+    <div class="actions">
+        <button type="button" @onclick="CreateAsync">Create game</button>
+    </div>
+
+    <p class="status">@status</p>
+    @if (!string.IsNullOrEmpty(Client.LastError)) { <p class="error">@Client.LastError</p> }
+    else if (Client.LastGame is not null) { <p class="ok">Game created</p> }
+    <pre class="result">@resultJson</pre>
+</section>
+
+@code {
+    private string gameId = string.Empty;
+    private string player = string.Empty;
+    private string status = "Enter a game id and owner player, then create.";
+    private string resultJson = "{}";
+
+    protected override void OnInitialized() => Client.StateChanged += () => InvokeAsync(StateHasChanged);
+
+    private async Task CreateAsync()
+    {
+        if (string.IsNullOrWhiteSpace(gameId)) { status = "Game id is required."; return; }
+        if (string.IsNullOrWhiteSpace(player)) { status = "Owner player is required."; return; }
+        var result = await Client.CreateAsync(gameId.Trim(), player.Trim());
+        status = result?.Message ?? "Create failed";
+        resultJson = System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+    }
+}

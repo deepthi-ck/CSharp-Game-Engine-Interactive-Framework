@@ -1,0 +1,18 @@
+@namespace GameEngine.Frontend
+@inherits LayoutComponentBase
+
+<div class="app-shell">
+    <header class="topbar">
+        <div class="brand">
+            <NavLink href="/" Match="NavLinkMatch.All">C# Game Engine</NavLink>
+            <span class="brand-sub">Interactive Framework · Blazor client</span>
+        </div>
+        <NavMenu />
+    </header>
+    <main class="content">
+        @Body
+    </main>
+    <footer class="footer">
+        Blazor WebAssembly · Game API <code>http://localhost:5080</code>
+    </footer>
+</div>
