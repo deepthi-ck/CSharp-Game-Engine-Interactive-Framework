@@ -3,7 +3,8 @@
 
 Runtime flow:
 
-  USER -> Game Dashboard (Blazor) -> Game API / SignalR Hub -> GameService
+  USER -> Game UI (Home / Create / Join / Play / Session / Stats)
+       -> Game API / SignalR Hub -> GameService
        -> GameManager -> SessionRouter -> GameSessionNode -> InMemoryGameStore
        -> SyncManager (broadcast) -> Frontend -> USER
 
@@ -12,7 +13,7 @@ Canonical modules (no duplication):
   engine/         InMemoryGameStore, GameKey, GameState, GamePolicy, GameStatistics
   distribution/   GameSessionNode, SessionRouter, SyncManager, SessionRegistry
   backend_csharp/ Orchestration, API, Hub, Eviction, Expiration (compiles engine+distribution)
-  frontend_csharp/ Blazor client only (no authoritative state)
+  frontend_csharp/ Multi-page Blazor WASM client (Router + layout; built-in HttpClient)
 
 Branches: exactly 12 CSharp_FE{n}_BE{m} where FE != BE.
 Quality tools: quality/ only.
