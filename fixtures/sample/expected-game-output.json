@@ -1,0 +1,7 @@
+﻿{
+  "create": { "success": true, "messageContains": "CREATE = SUCCESS" },
+  "join": { "success": true, "messageContains": "JOIN = SUCCESS", "playerCount": 2 },
+  "move": { "success": true, "boardLastMove": "play:card-A" },
+  "leave": { "success": true, "status": "ENDED" },
+  "getAfterLeave": { "success": false, "status": "ENDED" }
+}

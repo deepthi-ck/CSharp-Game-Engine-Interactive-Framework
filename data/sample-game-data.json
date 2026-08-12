@@ -1,0 +1,9 @@
+﻿{
+  "seed_games": [
+    {
+      "gameId": "game:1001",
+      "owner": "Visvantha",
+      "players": ["Visvantha", "guest01"]
+    }
+  ]
+}

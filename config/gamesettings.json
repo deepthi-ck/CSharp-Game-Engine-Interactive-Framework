@@ -1,0 +1,8 @@
+﻿{
+  "sessionTtlSeconds": 300,
+  "maxSessions": 32,
+  "maxPlayersPerSession": 8,
+  "sessionSlotCount": 3,
+  "apiBaseUrl": "http://localhost:5080",
+  "hubPath": "/hubs/game"
+}

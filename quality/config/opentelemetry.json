@@ -1,0 +1,5 @@
+﻿{
+  "service_name": "csharp-game-engine",
+  "exporters": ["console"],
+  "validate_endpoint": "http://localhost:5080/health"
+}

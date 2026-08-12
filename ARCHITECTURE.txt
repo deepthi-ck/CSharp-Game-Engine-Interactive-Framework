@@ -1,0 +1,18 @@
+﻿C# GAME ENGINE / INTERACTIVE FRAMEWORK
+======================================
+
+Runtime flow:
+
+  USER -> Game Dashboard (Blazor) -> Game API / SignalR Hub -> GameService
+       -> GameManager -> SessionRouter -> GameSessionNode -> InMemoryGameStore
+       -> SyncManager (broadcast) -> Frontend -> USER
+
+Canonical modules (no duplication):
+  shared/         DTOs, VersionInfo, BuildContext, GameConfiguration
+  engine/         InMemoryGameStore, GameKey, GameState, GamePolicy, GameStatistics
+  distribution/   GameSessionNode, SessionRouter, SyncManager, SessionRegistry
+  backend_csharp/ Orchestration, API, Hub, Eviction, Expiration (compiles engine+distribution)
+  frontend_csharp/ Blazor client only (no authoritative state)
+
+Branches: exactly 12 CSharp_FE{n}_BE{m} where FE != BE.
+Quality tools: quality/ only.

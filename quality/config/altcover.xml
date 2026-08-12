@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AltCover>
+  <Report>quality/reports/altcover/coverage.xml</Report>
+  <AssemblyExcludeKeys>
+    <AssemblyExcludeKey>xunit</AssemblyExcludeKey>
+  </AssemblyExcludeKeys>
+</AltCover>

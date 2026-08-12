@@ -1,0 +1,6 @@
+﻿{
+  "create": { "gameId": "game:1001", "player": "Visvantha" },
+  "join": { "gameId": "game:1001", "player": "Player2" },
+  "move": { "gameId": "game:1001", "player": "Visvantha", "move": "play:card-A" },
+  "leave": { "gameId": "game:1001" }
+}
