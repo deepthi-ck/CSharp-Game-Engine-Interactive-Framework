@@ -1,0 +1,49 @@
+@page "/play"
+@namespace GameEngine.Frontend
+@inject GameClient Client
+
+<section class="panel">
+    <h1>Play move</h1>
+    <p class="lead">Submit a move via <code>POST /game/{id}/move</code>. Fields start empty.</p>
+
+    <div class="form-grid">
+        <label>Game id
+            <input @bind="gameId" placeholder="game:1001" autocomplete="off" />
+        </label>
+        <label>Player name
+            <input @bind="player" placeholder="Enter player name" autocomplete="off" />
+        </label>
+        <label>Move
+            <input @bind="move" placeholder="play:card-A" autocomplete="off" />
+        </label>
+    </div>
+
+    <div class="actions">
+        <button type="button" @onclick="PlayAsync">Submit move</button>
+    </div>
+
+    <p class="status">@status</p>
+    @if (!string.IsNullOrEmpty(Client.LastError)) { <p class="error">@Client.LastError</p> }
+    else if (Client.LastGame is not null) { <p class="ok">Move accepted</p> }
+    <pre class="result">@resultJson</pre>
+</section>
+
+@code {
+    private string gameId = string.Empty;
+    private string player = string.Empty;
+    private string move = string.Empty;
+    private string status = "Enter game id, player, and move, then submit.";
+    private string resultJson = "{}";
+
+    protected override void OnInitialized() => Client.StateChanged += () => InvokeAsync(StateHasChanged);
+
+    private async Task PlayAsync()
+    {
+        if (string.IsNullOrWhiteSpace(gameId)) { status = "Game id is required."; return; }
+        if (string.IsNullOrWhiteSpace(player)) { status = "Player name is required."; return; }
+        if (string.IsNullOrWhiteSpace(move)) { status = "Move is required."; return; }
+        var result = await Client.MoveAsync(gameId.Trim(), player.Trim(), move.Trim());
+        status = result?.Message ?? "Move failed";
+        resultJson = System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+    }
+}
