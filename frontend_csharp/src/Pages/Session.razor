@@ -1,0 +1,48 @@
+@page "/session"
+@namespace GameEngine.Frontend
+@inject GameClient Client
+
+<section class="panel">
+    <h1>Session</h1>
+    <p class="lead">Inspect live session state or leave/end a game (<code>GET</code> / <code>DELETE /game/{id}</code>).</p>
+
+    <div class="form-grid">
+        <label>Game id
+            <input @bind="gameId" placeholder="game:1001" autocomplete="off" />
+        </label>
+    </div>
+
+    <div class="actions">
+        <button type="button" @onclick="RefreshAsync">Get state</button>
+        <button type="button" class="danger" @onclick="LeaveAsync">Leave / End</button>
+    </div>
+
+    <p class="status">@status</p>
+    @if (!string.IsNullOrEmpty(Client.LastError)) { <p class="error">@Client.LastError</p> }
+    else if (Client.LastGame is not null) { <p class="ok">Session result ready</p> }
+    <pre class="result">@resultJson</pre>
+</section>
+
+@code {
+    private string gameId = string.Empty;
+    private string status = "Enter a game id, then get state or leave.";
+    private string resultJson = "{}";
+
+    protected override void OnInitialized() => Client.StateChanged += () => InvokeAsync(StateHasChanged);
+
+    private async Task RefreshAsync()
+    {
+        if (string.IsNullOrWhiteSpace(gameId)) { status = "Game id is required."; return; }
+        var result = await Client.GetAsync(gameId.Trim());
+        status = result?.Message ?? "Get state failed";
+        resultJson = System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+    }
+
+    private async Task LeaveAsync()
+    {
+        if (string.IsNullOrWhiteSpace(gameId)) { status = "Game id is required."; return; }
+        var result = await Client.LeaveAsync(gameId.Trim());
+        status = result?.Message ?? "Leave failed";
+        resultJson = System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+    }
+}
